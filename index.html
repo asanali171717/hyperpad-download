@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скачать HyperPad IDE</title>
+    <style>
+        /* --- СОВРЕМЕННЫЙ ТЕМНЫЙ НЕОНОВЫЙ ДИЗАЙН --- */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+        }
+        
+        body { 
+            background: radial-gradient(circle at top, #1e1e24 0%, #111115 100%);
+            color: #e1e1e6; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            padding: 40px 20px; 
+            text-align: center; 
+            overflow-x: hidden;
+        }
+        
+        .glow-bg {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: royalblue;
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container { 
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 850px; 
+            background: rgba(30, 30, 35, 0.75); 
+            backdrop-filter: blur(10px);
+            padding: 50px 40px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            transition: all 0.3s ease;
+        }
+        
+        /* Переключатель языков */
+        .lang-switch { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 8px; 
+            margin-bottom: 30px; 
+        }
+        .lang-btn { 
+            background: #25252b; 
+            color: #85858a; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: bold;
+            transition: all 0.3s ease; 
+            text-decoration: none;
+        }
+        .lang-btn.active, .lang-btn:hover { 
+            background: #007acc; 
+            color: white; 
+            box-shadow: 0 0 12px rgba(0, 122, 204, 0.4);
+        }
+
+        h1 { 
+            font-size: 3.2rem; 
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #007acc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px; 
+            letter-spacing: -1px;
+        }
+        
+        .tagline { 
+            color: #a0a0aa;
+            font-size: 1.25rem; 
+            margin-bottom: 40px; 
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .actions-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 50px;
+        }
+
+        .download-btn { 
+            display: inline-block; 
+            background: linear-gradient(135deg, #007acc 0%, #005999 100%); 
+            color: white; 
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            padding: 18px 50px; 
+            border-radius: 14px; 
+            text-decoration: none; 
+            box-shadow: 0 8px 25px rgba(0, 122, 204, 0.4); 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .download-btn:hover { 
+            transform: scale(1.03) translateY(-3px); 
+            box-shadow: 0 12px 30px rgba(0, 122, 204, 0.6); 
+        }
+
+        .info-btn {
+            display: inline-block;
+            background: transparent;
+            color: #007acc;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 2px solid rgba(0, 122, 204, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .info-btn:hover {
+            background: rgba(0, 122, 204, 0.1);
+            border-color: #007acc;
+            color: #33a1ff;
+        }
+
+        .features-grid { 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left; 
+        }
+        @media (max-width: 600px) {
+            .features-grid { grid-template-columns: 1fr; }
+        }
+
+        .feature-card {
+            background: #1a1a1f;
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .feature-card .icon { font-size: 1.5rem; margin-bottom: 10px; display: inline-block; }
+        .feature-card h4 { color: #ffffff; margin-bottom: 8px; font-size: 1.1rem; }
+        .feature-card p { color: #85858a; font-size: 0.95rem; line-height: 1.5; }
+
+        /* --- НОВЫЙ БЛОК ПОДРОБНОЙ ИНФОРМАЦИИ (Изначально скрыт) --- */
+        .info-section {
+            display: none;
+            text-align: left;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .info-section h2 { color: #ffffff; margin-bottom: 20px; font-size: 1.8rem; border-bottom: 1px solid #2d2d2d; padding-bottom: 10px; }
+        .info-section p { color: #a0a0aa; font-size: 1.1rem; line-height: 1.7; margin-bottom: 20px; }
+        .info-section ul { margin-left: 20px; margin-bottom: 35px; color: #d4d4d4; }
+        .info-section li { margin-bottom: 10px; line-height: 1.5; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+
+    <div class="container">
+        <div class="lang-switch">
+            <a href="?lang=ru" id="btn-ru" class="lang-btn">RU</a>
+            <a href="?lang=en" id="btn-en" class="lang-btn">EN</a>
+        </div>
+
+        <div id="main-view">
+            <h1 id="main-title">HyperPad Ultra</h1>
+            <p class="tagline" id="tagline">Ультра-быстрая и всеядная IDE для кодинга и работы с любыми файлами.</p>
+
+            <div class="actions-block">
+                <a href="HyperpadIDE.exe" class="download-btn" id="download-btn">🚀 Скачать бесплатно</a>
+                <button class="info-btn" id="info-btn">ℹ️ Подробнее о редакторе</button>
+            </div>
+
+            <div class="features-grid" id="features-grid"></div>
+        </div>
+
+        <div id="info-view" class="info-section">
+            <h2 id="info-title">О проекте HyperPad Ultra</h2>
+            <div id="info-content"></div>
+            <button class="info-btn" id="back-btn" style="margin-top: 20px;">← Назад</button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            ru: {
+                title: "HyperPad Ultra",
+                tagline: "Ультра-быстрая и всеядная IDE для разработки, созданная на Python. Работает из коробки, открывает любой синтаксис.",
+                download: "🚀 Скачать бесплатно",
+                infoBtn: "ℹ️ Подробнее о редакторе",
+                backBtn: "← Назад",
+                features: [
+                    { icon: "⚡", title: "Полная всеядность", desc: "Умное чтение структуры позволяет открывать любые файлы в мире без вылетов редактора." },
+                    { icon: "🛠️", title: "Интеграция в Windows", desc: "Добавляется в контекстное меню системы. Открывайте код в один клик через Проводник." },
+                    { icon: "🗂️", title: "Вкладки VS Code Style", desc: "Удобный интерфейс на базе изолированных вкладок для быстрой работы с десятками файлов." },
+                    { icon: "🔢", title: "Умный Скролл", desc: "Синхронизированная нумерация строк и встроенная система отката действий (Undo/Redo)." }
+                ],
+                detailedTitle: "Техническое описание HyperPad Ultra",
+                detailedContent: `
+                    <p><strong>HyperPad Ultra</strong> — это полноценная легковесная среда разработки (IDE), спроектированная для быстрой и безопасной работы с текстовыми структурами и программными кодами. Собранное на базе движка Python с графической оболочкой Tkinter, приложение полностью автономно и оптимизировано для работы на Windows 10.</p>
+                    <p>В отличие от стандартных блокнотов, архитектура редактора распределяет файлы по изолированным вкладкам, снижая нагрузку на систему. Ядро IDE содержит алгоритмы перехвата аргументов командной строки, благодаря чему программа мгновенно подгружает файлы при прямом клике из операционной системы.</p>
+                    <h3>Ключевые технические параметры:</h3>
+                    <ul>
+                        <li><strong>Защита ядра:</strong> Автоматическое сканирование заголовков файлов на наличие бинарных байт-кодов предотвращает зависания при случайном открытии тяжелых медиафайлов.</li>
+                        <li><strong>Многоуровневое чтение:</strong> Поддержка каскадного декодирования данных (UTF-8, CP1251 и Safe-mode с заменой битых символов).</li>
+                        <li><strong>Интеграция низкого уровня:</strong> Прямая привязка к общесистемному классу реестра Windows для работы со всеядным расширением <code>.*</code>.</li>
+                    </ul>
+                `
+            },
+            en: {
+                title: "HyperPad Ultra",
+                tagline: "Ultra-fast and omnivorous IDE built with Python. Works out of the box, handles any syntax seamlessly.",
+                download: "🚀 Download for Free",
+                infoBtn: "ℹ️ About HyperPad IDE",
+                backBtn: "← Back",
+                features: [
+                    { icon: "⚡", title: "Omnivorous Core", desc: "Smart data-reading algorithm ensures absolutely any file type opens without single crashes." },
+                    { icon: "🛠️", title: "Windows Native Integration", desc: "Deep context-menu integration. Launch and view files instantly from your Explorer." },
+                    { icon: "🗂️", title: "VS Code Style Tabs", desc: "Clean, robust tab-oriented (Notebook) layout designed for handling multi-file sessions." },
+                    { icon: "🔢", title: "Smart Scroll Tech", desc: "Perfectly synced line counters and built-in text state preservation (Undo/Redo history)." }
+                ],
+                detailedTitle: "HyperPad Ultra Technical Specifications",
+                detailedContent: `
+                    <p><strong>HyperPad Ultra</strong> is a fully-featured, lightweight Integrated Development Environment (IDE) engineered for rapid and secure processing of textual structures and source code. Developed using Python with a optimized Tkinter GUI frontend, the application runs entirely standalone and standalone-tuned for Windows 10 platforms.</p>
+                    <p>Unlike standard text editors, its multi-tabbed layout isolates active file environments, significantly lowering systemic memory allocation. The core system natively decodes OS-level command-line arguments, facilitating instantaneous file rendering upon direct Explorer execution.</p>
+                    <h3>Core Technical Highlights:</h3>
+                    <ul>
+                        <li><strong>Core Protection:</strong> Automatic header polling filters binary byte-sequences to safeguard the application state against accidental heavy multimedia loading.</li>
+                        <li><strong>Multi-tier Decoding:</strong> Fallback encoding system cascading gracefully across UTF-8, CP1251, and safe-replace modes.</li>
+                        <li><strong>Low-level Registry Hooks:</strong> Direct bindings targeting the universal Windows <code>.*</code> extension subsystem.</li>
+                    </ul>
+                `
+            }
+        };
+
+        function getLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lang = urlParams.get('lang');
+            return (lang === 'en') ? 'en' : 'ru';
+        }
+
+        function initPage() {
+            const lang = getLanguage();
+            const data = translations[lang];
+
+            // Тексты главного вида
+            document.getElementById('main-title').textContent = data.title;
+            document.getElementById('tagline').textContent = data.tagline;
+            document.getElementById('download-btn').textContent = data.download;
+            document.getElementById('info-btn').textContent = data.infoBtn;
+            
+            // Тексты инфо вида
+            document.getElementById('info-title').textContent = data.detailedTitle;
+            document.getElementById('info-content').innerHTML = data.detailedContent;
+            document.getElementById('back-btn').textContent = data.backBtn;
+
+            // Карточки
+            const grid = document.getElementById('features-grid');
+            grid.innerHTML = '';
+            data.features.forEach(feat => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                card.innerHTML = `
+                    <span class="icon">${feat.icon}</span>
+                    <h4>${feat.title}</h4>
+                    <p>${feat.desc}</p>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('btn-ru').classList.remove('active');
+            document.getElementById('btn-en').classList.remove('active');
+            document.getElementById(`btn-${lang}`).classList.add('active');
+        }
+
+        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ ---
+        const mainView = document.getElementById('main-view');
+        const infoView = document.getElementById('info-view');
+
+        document.getElementById('info-btn').addEventListener('click', () => {
+            mainView.style.display = 'none';
+            infoView.style.display = 'block';
+        });
+
+        document.getElementById('back-btn').addEventListener('click', () => {
+            infoView.style.display = 'none';
+            mainView.style.display = 'block';
+        });
+
+        initPage();
+    </script>
+</body>
+</html>
